@@ -1,0 +1,42 @@
+{
+	"name": "@cordengine/shared-config",
+	"version": "0.1.0",
+	"description": "Shared configurations for tools used in all Cord Engine projects.",
+	"author": "Brian Lister <brian@sparkforge.dev> (http://sparkforge.dev/)",
+	"contributors": [],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/CordEngine/shared-config.git"
+	},
+	"license": "MIT",
+	"type": "module",
+	"engines": {
+		"bun": "1.1.34"
+	},
+	"packageManager": "bun@1.1.34",
+	"scripts": {
+		"lint": "bun lint:format && bun lint:code; bun lint:tsc; bun lint:markdown;",
+		"lint:format": "biome format --write",
+		"lint:ci": "biome ci --reporter=github",
+		"lint:code": "biome check",
+		"lint:markdown": "markdownlint-cli2 '**/*.md'",
+		"lint:tsc": "tsc --noEmit --skipLibCheck"
+	},
+	"exports": {
+		"./cspell": "./cspell-dictionary/cspell-ext.json",
+		"./markdownlint": "./.markdownlint.json",
+		"./biome": "./biome.json"
+	},
+	"peerDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"markdownlint-cli2": "^0.15.0"
+	},
+	"trustedDependencies": ["@biomejs/biome"],
+	"devDependencies": {
+		"@types/bun": "^1.1.13",
+		"ajv": "^8.17.1",
+		"cspell": "^8.16.0",
+		"json5": "^2.2.3",
+		"typescript": "^5.6.3"
+	}
+}

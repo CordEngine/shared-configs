@@ -1,0 +1,14 @@
+{
+	"id": "cord-engine",
+	"name": "Cord Engine",
+	"description": "Cord Engine Project Dictionary",
+	"readonly": true,
+	"dictionaryDefinitions": [
+		{
+			"name": "Cord Engine",
+			"description": "Shared common dictionary for Cord Engine",
+			"path": "./dictionary.txt"
+		}
+	],
+	"dictionaries": ["Cord Engine"]
+}

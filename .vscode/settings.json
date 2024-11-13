@@ -1,0 +1,7 @@
+{
+	"code-runner.executorMap": {
+		"typescript": "bun"
+	},
+	"typeCoverage.strict": true,
+	"editor.defaultFormatter": "biomejs.biome"
+}

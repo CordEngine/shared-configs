@@ -1,0 +1,8 @@
+{
+	"version": "0.2",
+	"useGitignore": true,
+	"allowCompoundWords": true,
+	"import": ["./cspell-dictionary/cspell-ext.json"],
+	"words": [],
+	"flagWords": []
+}
