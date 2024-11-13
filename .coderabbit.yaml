@@ -22,7 +22,7 @@ reviews:
     enabled: true
     auto_incremental_review: true
     labels:
-      - '🐰 status: ready for review'
+      - '🐰 status: ready for rabbit'
     drafts: false
 chat:
   auto_reply: true
