@@ -16,6 +16,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: ./.github/workflows/setup-bun.yml
       - run: bun lint:ci
 
@@ -23,6 +24,7 @@ jobs:
     name: Typescript
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: ./.github/workflows/setup-bun.yml
       - run: bun lint:tsc
 
@@ -30,6 +32,7 @@ jobs:
     name: Markdown
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: ./.github/workflows/setup-bun.yml
       - run: bun lint:markdown
 
