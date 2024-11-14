@@ -1,12 +1,12 @@
 {
-	"name": "@cordengine/shared-config",
+	"name": "@cordengine/shared-configs",
 	"version": "0.1.0",
 	"description": "Shared configurations for tools used in all Cord Engine projects.",
 	"author": "Brian Lister <brian@sparkforge.dev> (http://sparkforge.dev/)",
 	"contributors": [],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/CordEngine/shared-config.git"
+		"url": "https://github.com/CordEngine/shared-configs.git"
 	},
 	"license": "MIT",
 	"type": "module",
@@ -33,9 +33,9 @@
 	},
 	"trustedDependencies": ["@biomejs/biome"],
 	"devDependencies": {
+		"@cspell/cspell-types": "^8.16.0",
 		"@types/bun": "^1.1.13",
 		"ajv": "^8.17.1",
-		"cspell": "^8.16.0",
 		"json5": "^2.2.3",
 		"typescript": "^5.6.3"
 	}

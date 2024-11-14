@@ -8,6 +8,9 @@
 			"name": "Debug Program",
 			"program": "${workspaceFolder}/index.ts",
 			"cwd": "${workspaceFolder}",
+			"env": {
+				"NODE_ENV": "${env:NODE_ENV:-development}"
+			},
 			"stopOnEntry": false,
 			"watchMode": true
 		},

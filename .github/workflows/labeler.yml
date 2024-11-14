@@ -50,6 +50,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const LABELS = {
+              TRIAGE: '🚦 status: awaiting triage',
+              RABBIT: '🐰 status: ready for rabbit'
+            };
+
             const pr = context.payload.pull_request;
 
             try {
@@ -57,7 +62,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: pr.number,
-                labels: ['🚦 status: awaiting triage', '🐰 status: ready for rabbit']
+                labels: Object.values(LABELS)
               });
             } catch (error) {
               core.setFailed(`Failed to add labels: ${error.message}`);

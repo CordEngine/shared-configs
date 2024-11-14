@@ -11,8 +11,8 @@ const readConfig = (path: string) => {
 
 describe('Markdown Lint Configuration', () => {
 	const configs = {
-		base: readConfig('./.markdownlint.json'),
-		cli: readConfig('./.markdownlint-cli2.jsonc'),
+		base: readConfig(join(process.cwd(), '.markdownlint.json')),
+		cli: readConfig(join(process.cwd(), '.markdownlint-cli2.jsonc')),
 	};
 
 	test('validates against official schemas', async () => {
@@ -20,9 +20,9 @@ describe('Markdown Lint Configuration', () => {
 			strict: false,
 			allowUnionTypes: true,
 			logger: {
-				// biome-ignore lint/suspicious/noEmptyBlockStatements: <explanation>
+				// biome-ignore lint/suspicious/noEmptyBlockStatements: Intentionally suppressing non-critical Ajv warnings
 				warn: () => {}, // Suppress warnings
-				// biome-ignore lint/suspicious/noEmptyBlockStatements: <explanation>
+				// biome-ignore lint/suspicious/noEmptyBlockStatements: Intentionally suppressing non-critical Ajv warnings
 				log: () => {},
 				error: console.error,
 			},

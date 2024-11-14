@@ -47,9 +47,9 @@ describe('Biome Configuration', () => {
 			strict: false,
 			allowUnionTypes: true,
 			logger: {
-				// biome-ignore lint/suspicious/noEmptyBlockStatements: <explanation>
+				// biome-ignore lint/suspicious/noEmptyBlockStatements: Intentionally suppressing non-critical Ajv warnings
 				warn: () => {}, // Suppress warnings
-				// biome-ignore lint/suspicious/noEmptyBlockStatements: <explanation>
+				// biome-ignore lint/suspicious/noEmptyBlockStatements: Intentionally suppressing non-critical Ajv warnings
 				log: () => {},
 				error: console.error,
 			},
@@ -64,7 +64,15 @@ describe('Biome Configuration', () => {
 		const isValid = validate(biomeConfig);
 
 		if (!isValid) {
-			console.error('Validation errors:', validate.errors);
+			const formattedErrors = validate.errors?.map((error) => ({
+				path: error.instancePath,
+				message: error.message,
+				params: error.params,
+			}));
+			console.error(
+				'Biome configuration validation failed:',
+				JSON.stringify(formattedErrors, null, 2),
+			);
 		}
 
 		expect(isValid).toBe(true);

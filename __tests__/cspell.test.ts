@@ -11,6 +11,10 @@ const readConfig = (path: string) => {
 };
 
 describe('CSpell Configuration', () => {
+	const dictionaryPath = join(
+		process.cwd(),
+		'cspell-dictionary/dictionary.txt',
+	);
 	const config = readConfig('./.cspell.json');
 
 	test('validates against official schema', async () => {
@@ -18,9 +22,9 @@ describe('CSpell Configuration', () => {
 			strict: false,
 			allowUnionTypes: true,
 			logger: {
-				// biome-ignore lint/suspicious/noEmptyBlockStatements: <explanation>
+				// biome-ignore lint/suspicious/noEmptyBlockStatements: Intentionally suppressing non-critical Ajv warnings
 				warn: () => {}, // Suppress warnings
-				// biome-ignore lint/suspicious/noEmptyBlockStatements: <explanation>
+				// biome-ignore lint/suspicious/noEmptyBlockStatements: Intentionally suppressing non-critical Ajv warnings
 				log: () => {},
 				error: console.error,
 			},
@@ -42,18 +46,69 @@ describe('CSpell Configuration', () => {
 	});
 
 	test('dictionary file exists', () => {
-		const dictionaryPath = join(
-			process.cwd(),
-			'cspell-dictionary/dictionary.txt',
-		);
 		expect(existsSync(dictionaryPath)).toBe(true);
 	});
 
 	test('dictionary file is readable', () => {
-		const dictionaryPath = join(
-			process.cwd(),
-			'cspell-dictionary/dictionary.txt',
-		);
 		expect(() => readFileSync(dictionaryPath, 'utf-8')).not.toThrow();
+	});
+
+	test('dictionary file contains valid entries', () => {
+		const content = readFileSync(dictionaryPath, 'utf-8');
+		const lines = content.split('\n').filter((line) => line.trim() !== '');
+
+		const validPrefixes = ['~', '+', '*', '!'];
+		const errors: string[] = [];
+
+		lines.forEach((line, index) => {
+			// Skip empty lines and comments
+			if (line.trim() === '' || line.startsWith('//')) {
+				return;
+			}
+
+			// Check for invalid characters in the line
+			const hasInvalidChars = /[^a-zA-Z0-9\-~+*!\s]/.test(line);
+			if (hasInvalidChars) {
+				errors.push(`Line ${index + 1}: Contains invalid characters: ${line}`);
+			}
+
+			// Check prefix special characters
+			const firstChar = line[0];
+			if (firstChar && validPrefixes.includes(firstChar)) {
+				const word = line.slice(1);
+				if (!word.trim()) {
+					errors.push(
+						`Line ${index + 1}: Special character prefix with no word: ${line}`,
+					);
+				}
+			}
+
+			// Check for + and * as suffixes
+			if (line.endsWith('+') || line.endsWith('*')) {
+				const word = line.slice(0, -1);
+				if (!word.trim()) {
+					errors.push(
+						`Line ${index + 1}: Special character suffix with no word: ${line}`,
+					);
+				}
+			}
+
+			// Check for multiple words on the same line
+			const wordParts = line
+				.replace(/^[~+*!]/, '')
+				.replace(/[+*]$/, '')
+				.trim()
+				.split(/\s+/);
+			if (wordParts.length > 1) {
+				errors.push(
+					`Line ${index + 1}: Multiple words found on single line: ${line}`,
+				);
+			}
+		});
+
+		if (errors.length > 0) {
+			console.error('Dictionary validation errors:\n', errors.join('\n'));
+		}
+		expect(errors).toHaveLength(0);
 	});
 });

@@ -6,7 +6,7 @@
 	"dictionaryDefinitions": [
 		{
 			"name": "Cord Engine",
-			"description": "Shared common dictionary for Cord Engine",
+			"description": "Custom terminology and common words specific to Cord Engine projects",
 			"path": "./dictionary.txt"
 		}
 	],
