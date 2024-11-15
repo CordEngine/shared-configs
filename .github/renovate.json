@@ -3,16 +3,31 @@
 	"extends": [
 		"config:recommended",
 		":semanticCommits",
-		":maintainLockFilesWeekly"
+		":maintainLockFilesWeekly",
+		":enableVulnerabilityAlerts",
+		":rebaseStalePrs"
 	],
-	"schedule": ["before 5am on monday"],
+	"schedule": ["* 21-23,0-6 * * *"],
+	"timezone": "CST",
 	"packageRules": [
 		{
 			"matchUpdateTypes": ["minor", "patch"],
 			"matchCurrentVersion": "!/^0/",
 			"automerge": true,
 			"stabilityDays": 3,
-			"prCreation": "not-pending"
+			"prCreation": "not-pending",
+			"labels": ["🧽 type: chore", "🤖 status: automated"]
+		},
+		{
+			"matchUpdateTypes": ["major"],
+			"stabilityDays": 7,
+			"prCreation": "not-pending",
+			"labels": ["🧽 type: chore", "🚦 status: awaiting triage"]
+		},
+		{
+			"matchPackagePatterns": ["^@types/"],
+			"groupName": "type definitions",
+			"labels": ["🧽 type: chore"]
 		}
 	]
 }

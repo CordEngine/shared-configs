@@ -23,6 +23,15 @@ describe('markdownlint', () => {
 		);
 	});
 
+	test('config specifies schema matching pinned version', () => {
+		expect(mdConfig).toHaveProperty('$schema');
+
+		const schemaVersion = mdConfig.$schema.match(/(\d+\.\d+\.\d+)/)?.[1];
+		expect(schemaVersion).toEqual(
+			packageJson.peerDependencies['markdownlint-cli2'],
+		);
+	});
+
 	test('config validates to official schema', () => {
 		const ajv = new Ajv({ strict: false, logger: false });
 		const validate = ajv.compile(mdSchema);
@@ -31,6 +40,7 @@ describe('markdownlint', () => {
 		const formattedErrors = validate.errors?.map((error) => ({
 			message: error.message,
 			params: error.params,
+			path: error.instancePath || '(root)',
 		}));
 
 		expect(isValid, JSON.stringify(formattedErrors, null, 2)).toBeTruthy();

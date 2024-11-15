@@ -66,5 +66,6 @@ jobs:
                 labels: Object.values(LABELS)
               });
             } catch (error) {
-              core.setFailed(`Failed to add labels: ${error.message}`);
+              core.setFailed(`Failed to add labels to PR #${pr.number}: ${error.message}\nStack: ${error.stack}`);
+              core.debug(`Labels payload was: ${JSON.stringify(Object.values(LABELS), null, 2)}`);
             }

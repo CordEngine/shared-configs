@@ -35,13 +35,18 @@ describe('Biome', () => {
 	});
 
 	test('config validates to official schema', () => {
-		const ajv = new Ajv({ strict: false, logger: false });
+		const ajv = new Ajv({
+			strict: false,
+			allowUnionTypes: true,
+			logger: false,
+		});
 		const validate = ajv.compile(biomeSchema);
 
 		const isValid = validate(biomeConfig);
 		const formattedErrors = validate.errors?.map((error) => ({
 			message: error.message,
 			params: error.params,
+			path: error.instancePath || '(root)',
 		}));
 
 		expect(isValid, JSON.stringify(formattedErrors, null, 2)).toBeTruthy();

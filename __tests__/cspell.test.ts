@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import cspellSchema from '@cspell/cspell-types/cspell.schema.json';
 import Ajv from 'ajv';
-import cspellConfig from '.././cspell-dictionary/cspell-ext.json';
+import cspellConfig from '../cspell-dictionary/cspell-ext.json';
 import packageJson from '../package.json';
 
 describe('CSpell', async () => {
@@ -30,6 +30,7 @@ describe('CSpell', async () => {
 		const formattedErrors = validate.errors?.map((error) => ({
 			message: error.message,
 			params: error.params,
+			path: error.instancePath || '(root)',
 		}));
 
 		expect(isValid, JSON.stringify(formattedErrors, null, 2)).toBeTruthy();

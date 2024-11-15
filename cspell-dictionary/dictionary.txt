@@ -12,3 +12,6 @@ ossf
 pino
 sarif
 valibot
+
+# Misc prop names from external sources
+automerge # renovate

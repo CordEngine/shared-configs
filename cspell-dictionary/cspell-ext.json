@@ -1,5 +1,5 @@
 {
-	"$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+	"$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/v8.16.0/cspell.schema.json",
 	"version": "0.2",
 	"id": "cord-engine",
 	"name": "Cord Engine",
