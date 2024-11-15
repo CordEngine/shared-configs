@@ -1,23 +1,22 @@
 import { describe, expect, test } from 'bun:test';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { parse as parseJSON5 } from 'json5';
+import packageJson from '../package.json';
 
-const readConfig = (path: string) => {
-	const content = readFileSync(path, 'utf-8');
-	return parseJSON5(content);
-};
+describe('Package configuration', () => {
+	test('has required fields for publishing', () => {
+		const requiredFields = [
+			'name',
+			'version',
+			'description',
+			'author',
+			'license',
+			'repository',
+		];
 
-describe('Package Configuration', () => {
-	const packageJson = readConfig('./package.json');
-
-	test('exports required configurations', () => {
-		expect(packageJson).toHaveProperty('exports');
-		const exports = packageJson.exports;
-
-		expect('./biome' in exports).toBe(true);
-		expect('./cspell' in exports).toBe(true);
-		expect('./markdownlint' in exports).toBe(true);
+		for (const field of requiredFields) {
+			expect(packageJson).toHaveProperty(field);
+		}
 	});
 
 	test('export paths resolve to existing files', () => {
@@ -32,13 +31,5 @@ describe('Package Configuration', () => {
 			}
 			expect(existsSync(fullPath)).toBe(true);
 		}
-	});
-
-	test('has required peer dependencies', () => {
-		expect(packageJson).toHaveProperty('peerDependencies');
-		const peerDeps = packageJson.peerDependencies;
-
-		expect(peerDeps).toHaveProperty('@biomejs/biome');
-		expect(peerDeps).toHaveProperty('markdownlint-cli2');
 	});
 });

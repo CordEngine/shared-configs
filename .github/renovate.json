@@ -10,11 +10,9 @@
 		{
 			"matchUpdateTypes": ["minor", "patch"],
 			"matchCurrentVersion": "!/^0/",
-			"automerge": true
-		},
-		{
-			"matchDepTypes": ["devDependencies"],
-			"groupName": "dev dependencies"
+			"automerge": true,
+			"stabilityDays": 3,
+			"prCreation": "not-pending"
 		}
 	]
 }

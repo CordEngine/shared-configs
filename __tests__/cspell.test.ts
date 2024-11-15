@@ -1,114 +1,97 @@
-// __tests__/cspell.test.ts
 import { describe, expect, test } from 'bun:test';
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import cspellSchema from '@cspell/cspell-types/cspell.schema.json';
 import Ajv from 'ajv';
-import { parse as parseJSON5 } from 'json5';
+import cspellConfig from '.././cspell-dictionary/cspell-ext.json';
+import packageJson from '../package.json';
 
-const readConfig = (path: string) => {
-	const content = readFileSync(path, 'utf-8');
-	return parseJSON5(content);
-};
+describe('CSpell', async () => {
+	test('is not a dependency', () => {
+		if ('dependencies' in packageJson) {
+			expect(packageJson.dependencies).not.toContainKey('cspell');
+		}
 
-describe('CSpell Configuration', () => {
-	const dictionaryPath = join(
-		process.cwd(),
-		'cspell-dictionary/dictionary.txt',
-	);
-	const config = readConfig('./.cspell.json');
+		if ('devDependencies' in packageJson) {
+			expect(packageJson.devDependencies).not.toContainKey('cspell');
+		}
+	});
 
-	test('validates against official schema', async () => {
-		const ajv = new Ajv({
-			strict: false,
-			allowUnionTypes: true,
-			logger: {
-				// biome-ignore lint/suspicious/noEmptyBlockStatements: Intentionally suppressing non-critical Ajv warnings
-				warn: () => {}, // Suppress warnings
-				// biome-ignore lint/suspicious/noEmptyBlockStatements: Intentionally suppressing non-critical Ajv warnings
-				log: () => {},
-				error: console.error,
-			},
-		});
-
-		const schemaPath = join(
-			process.cwd(),
-			'node_modules/@cspell/cspell-types/cspell.schema.json',
+	test('is exported as ./cspell in package.json', () => {
+		expect('./cspell' in packageJson.exports).toBe(true);
+		expect(packageJson.exports['./cspell']).toEqual(
+			'./cspell-dictionary/cspell-ext.json',
 		);
-		const schema = readConfig(schemaPath);
-
-		const validate = ajv.compile(schema);
-		const isValid = validate(config);
-
-		if (!isValid) {
-			console.error('CSpell config validation errors:', validate.errors);
-		}
-		expect(isValid).toBe(true);
 	});
 
-	test('dictionary file exists', () => {
-		expect(existsSync(dictionaryPath)).toBe(true);
+	test('config validates to official schema', () => {
+		const ajv = new Ajv({ strict: false, logger: false });
+		const validate = ajv.compile(cspellSchema);
+
+		const isValid = validate(cspellConfig);
+		const formattedErrors = validate.errors?.map((error) => ({
+			message: error.message,
+			params: error.params,
+		}));
+
+		expect(isValid, JSON.stringify(formattedErrors, null, 2)).toBeTruthy();
+		expect(cspellConfig.version).toEqual('0.2');
 	});
 
-	test('dictionary file is readable', () => {
-		expect(() => readFileSync(dictionaryPath, 'utf-8')).not.toThrow();
+	test('defines dictionary', () => {
+		expect(cspellConfig).toHaveProperty('dictionaryDefinitions');
+		expect(cspellConfig).toHaveProperty('dictionaries');
+		expect(cspellConfig.dictionaries).toContain(
+			cspellConfig.dictionaryDefinitions[0]?.name,
+		);
 	});
 
-	test('dictionary file contains valid entries', () => {
-		const content = readFileSync(dictionaryPath, 'utf-8');
-		const lines = content.split('\n').filter((line) => line.trim() !== '');
-
-		const validPrefixes = ['~', '+', '*', '!'];
-		const errors: string[] = [];
-
-		lines.forEach((line, index) => {
-			// Skip empty lines and comments
-			if (line.trim() === '' || line.startsWith('//')) {
-				return;
+	const dictionary = Bun.file('cspell-dictionary/dictionary.txt');
+	const lines = (await dictionary.text())
+		.split('\n')
+		.map((line) => {
+			// Strip comments
+			const commentIndex = line.indexOf('#');
+			if (commentIndex === 0) {
+				return '';
 			}
-
-			// Check for invalid characters in the line
-			const hasInvalidChars = /[^a-zA-Z0-9\-~+*!\s]/.test(line);
-			if (hasInvalidChars) {
-				errors.push(`Line ${index + 1}: Contains invalid characters: ${line}`);
+			if (commentIndex > 0) {
+				// Return the part before the comment, trimmed
+				return line.substring(0, commentIndex).trim();
 			}
+			return line.trim();
+		})
+		.filter(Boolean); // Remove empty lines
 
-			// Check prefix special characters
-			const firstChar = line[0];
-			if (firstChar && validPrefixes.includes(firstChar)) {
-				const word = line.slice(1);
-				if (!word.trim()) {
-					errors.push(
-						`Line ${index + 1}: Special character prefix with no word: ${line}`,
-					);
+	// Valid characters (letters, numbers, underscore, hyphen, period)
+	const validChars = /^[\p{L}\p{N}_.-]+$/u;
+
+	// CSpell dictionary syntax characters (http://cspell.org/docs/dictionaries-custom/#words-list-syntax)
+	const syntaxChars = /^[!~+*]|[+*]$/;
+
+	test('dictionary is formatted correctly', () => {
+		const invalidLines = lines
+			.map((line, index) => {
+				// Remove special commands for word validation
+				const word = line.replace(syntaxChars, '');
+
+				if (!validChars.test(word)) {
+					return `Line ${index + 1}: Invalid word format: ${line}`;
 				}
-			}
+				return null;
+			})
+			.filter(Boolean);
 
-			// Check for + and * as suffixes
-			if (line.endsWith('+') || line.endsWith('*')) {
-				const word = line.slice(0, -1);
-				if (!word.trim()) {
-					errors.push(
-						`Line ${index + 1}: Special character suffix with no word: ${line}`,
-					);
-				}
-			}
+		expect(invalidLines).toEqual([]);
+	});
 
-			// Check for multiple words on the same line
-			const wordParts = line
-				.replace(/^[~+*!]/, '')
-				.replace(/[+*]$/, '')
-				.trim()
-				.split(/\s+/);
-			if (wordParts.length > 1) {
-				errors.push(
-					`Line ${index + 1}: Multiple words found on single line: ${line}`,
-				);
-			}
-		});
+	test('no duplicate words', () => {
+		const words = lines.map((line) =>
+			line.replace(syntaxChars, '').toLowerCase(),
+		);
 
-		if (errors.length > 0) {
-			console.error('Dictionary validation errors:\n', errors.join('\n'));
-		}
-		expect(errors).toHaveLength(0);
+		const duplicates = words.filter(
+			(word, index) => words.indexOf(word) !== index,
+		);
+
+		expect(duplicates).toEqual([]);
 	});
 });

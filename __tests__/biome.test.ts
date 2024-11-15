@@ -1,80 +1,49 @@
 import { describe, expect, test } from 'bun:test';
-import { readFileSync } from 'node:fs';
+import biomeSchema from '@biomejs/biome/configuration_schema.json';
 import Ajv from 'ajv';
-import { parse as parseJSON } from 'json5';
+import semver from 'semver';
+import biomeConfig from '../biome.json';
+import packageJson from '../package.json';
 
-// Helper to read and parse JSON files
-const readJsonConfig = (path: string) => {
-	const content = readFileSync(path, 'utf-8');
-	return parseJSON(content);
-};
-
-describe('Biome Configuration', () => {
-	const biomeConfig = readJsonConfig('./biome.json');
-	const packageJson = readJsonConfig('./package.json');
-
-	test('has valid structure', () => {
-		expect(biomeConfig).toHaveProperty('$schema');
-		expect(biomeConfig).toHaveProperty('formatter');
-		expect(biomeConfig).toHaveProperty('linter');
-	});
-
-	test('has linter rules', () => {
-		expect(biomeConfig.linter).toHaveProperty('rules');
-		expect(biomeConfig.linter.rules).toBeObject();
-	});
-
-	test('schema version matches installed biome version', () => {
-		const schemaUrl = biomeConfig.$schema;
-		expect(schemaUrl).toBeDefined();
-
-		// Extract version from schema URL
-		const schemaVersion = schemaUrl.match(/(\d+\.\d+\.\d+)/)?.[1];
-		expect(schemaVersion).toBeDefined();
-
-		// Get installed Biome version
-		const biomeVersion = packageJson.peerDependencies[
-			'@biomejs/biome'
-		]?.replace('^', '');
-		expect(biomeVersion).toBeDefined();
-
-		// Compare versions
-		expect(schemaVersion).toBe(biomeVersion);
-	});
-
-	test('validates against official schema', () => {
-		const ajv = new Ajv({
-			strict: false,
-			allowUnionTypes: true,
-			logger: {
-				// biome-ignore lint/suspicious/noEmptyBlockStatements: Intentionally suppressing non-critical Ajv warnings
-				warn: () => {}, // Suppress warnings
-				// biome-ignore lint/suspicious/noEmptyBlockStatements: Intentionally suppressing non-critical Ajv warnings
-				log: () => {},
-				error: console.error,
-			},
-		});
-
-		const schemaPath = require.resolve(
-			'@biomejs/biome/configuration_schema.json',
-		);
-		const schema = readJsonConfig(schemaPath);
-
-		const validate = ajv.compile(schema);
-		const isValid = validate(biomeConfig);
-
-		if (!isValid) {
-			const formattedErrors = validate.errors?.map((error) => ({
-				path: error.instancePath,
-				message: error.message,
-				params: error.params,
-			}));
-			console.error(
-				'Biome configuration validation failed:',
-				JSON.stringify(formattedErrors, null, 2),
-			);
+describe('Biome', () => {
+	test('is pinned peerDependency', () => {
+		expect(
+			semver.valid(packageJson.peerDependencies['@biomejs/biome']),
+		).not.toBeNull();
+		expect(packageJson.devDependencies).not.toContainKey('@biomejs/biome');
+		if ('dependencies' in packageJson) {
+			expect(packageJson.dependencies).not.toContainKey('@biomejs/biome');
 		}
+	});
 
-		expect(isValid).toBe(true);
+	test('is trusted dependency', () => {
+		expect(packageJson.trustedDependencies).toContain('@biomejs/biome');
+	});
+
+	test('is exported as ./biome in package.json', () => {
+		expect('./biome' in packageJson.exports).toBe(true);
+		expect(packageJson.exports['./biome']).toEqual('./biome.json');
+	});
+
+	test('config specifies schema matching pinned version', () => {
+		expect(biomeConfig).toHaveProperty('$schema');
+
+		const schemaVersion = biomeConfig.$schema.match(/(\d+\.\d+\.\d+)/)?.[1];
+		expect(schemaVersion).toEqual(
+			packageJson.peerDependencies['@biomejs/biome'],
+		);
+	});
+
+	test('config validates to official schema', () => {
+		const ajv = new Ajv({ strict: false, logger: false });
+		const validate = ajv.compile(biomeSchema);
+
+		const isValid = validate(biomeConfig);
+		const formattedErrors = validate.errors?.map((error) => ({
+			message: error.message,
+			params: error.params,
+		}));
+
+		expect(isValid, JSON.stringify(formattedErrors, null, 2)).toBeTruthy();
 	});
 });

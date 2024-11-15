@@ -35,7 +35,8 @@ jobs:
                 ...updateData
               });
             } catch (error) {
-              core.setFailed(`Failed to update PR: ${error.message}`);
+              core.setFailed(`Failed to update PR #${pr.number}: ${error.message}\nStack: ${error.stack}`);
+              core.debug(`Update payload was: ${JSON.stringify(updateData, null, 2)}`);
             }
 
   labeler:

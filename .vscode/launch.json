@@ -3,7 +3,7 @@
 	"configurations": [
 		{
 			"type": "bun",
-			"internalConsoleOptions": "neverOpen",
+			"internalConsoleOptions": "openOnSessionStart",
 			"request": "launch",
 			"name": "Debug Program",
 			"program": "${workspaceFolder}/index.ts",
@@ -16,7 +16,7 @@
 		},
 		{
 			"type": "bun",
-			"internalConsoleOptions": "neverOpen",
+			"internalConsoleOptions": "openOnSessionStart",
 			"request": "launch",
 			"name": "Run Program",
 			"program": "${workspaceFolder}/index.ts",
@@ -29,7 +29,7 @@
 		},
 		{
 			"type": "bun",
-			"internalConsoleOptions": "neverOpen",
+			"internalConsoleOptions": "openOnSessionStart",
 			"request": "launch",
 			"name": "Debug File",
 			"program": "${file}",
@@ -42,7 +42,7 @@
 		},
 		{
 			"type": "bun",
-			"internalConsoleOptions": "neverOpen",
+			"internalConsoleOptions": "openOnSessionStart",
 			"request": "launch",
 			"name": "Run File",
 			"program": "${file}",
