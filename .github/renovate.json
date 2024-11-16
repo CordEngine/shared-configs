@@ -16,7 +16,11 @@
 			"automerge": true,
 			"stabilityDays": 3,
 			"prCreation": "not-pending",
-			"labels": ["🧽 type: chore", "🤖 status: automated"]
+			"labels": ["🧽 type: chore", "🤖 status: automated"],
+			"postUpgradeTasks": {
+				"commands": ["bun test"],
+				"executionMode": "branch"
+			}
 		},
 		{
 			"matchUpdateTypes": ["major"],

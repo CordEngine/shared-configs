@@ -28,7 +28,9 @@ describe('Biome', () => {
 	test('config specifies schema matching pinned version', () => {
 		expect(biomeConfig).toHaveProperty('$schema');
 
-		const schemaVersion = biomeConfig.$schema.match(/(\d+\.\d+\.\d+)/)?.[1];
+		const schemaVersion = new RegExp(/(\d+\.\d+\.\d+)/).exec(
+			biomeConfig.$schema,
+		)?.[1];
 		expect(schemaVersion).toEqual(
 			packageJson.peerDependencies['@biomejs/biome'],
 		);
@@ -39,6 +41,9 @@ describe('Biome', () => {
 			strict: false,
 			allowUnionTypes: true,
 			logger: false,
+			validateSchema: true,
+			validateFormats: true,
+			allErrors: true,
 		});
 		const validate = ajv.compile(biomeSchema);
 

@@ -23,7 +23,13 @@ describe('CSpell', async () => {
 	});
 
 	test('config validates to official schema', () => {
-		const ajv = new Ajv({ strict: false, logger: false });
+		const ajv = new Ajv({
+			strict: false,
+			logger: false,
+			validateSchema: true,
+			validateFormats: true,
+			allErrors: true,
+		});
 		const validate = ajv.compile(cspellSchema);
 
 		const isValid = validate(cspellConfig);
@@ -66,7 +72,7 @@ describe('CSpell', async () => {
 	const validChars = /^[\p{L}\p{N}_.-]+$/u;
 
 	// CSpell dictionary syntax characters (http://cspell.org/docs/dictionaries-custom/#words-list-syntax)
-	const syntaxChars = /^[!~+*]|[+*]$/;
+	const syntaxChars = /(^[!~+*])|([+*]$)/;
 
 	test('dictionary is formatted correctly', () => {
 		const invalidLines = lines
@@ -89,9 +95,14 @@ describe('CSpell', async () => {
 			line.replace(syntaxChars, '').toLowerCase(),
 		);
 
-		const duplicates = words.filter(
-			(word, index) => words.indexOf(word) !== index,
-		);
+		const seen = new Set<string>();
+		const duplicates = words.filter((word) => {
+			if (seen.has(word)) {
+				return true;
+			}
+			seen.add(word);
+			return false;
+		});
 
 		expect(duplicates).toEqual([]);
 	});
