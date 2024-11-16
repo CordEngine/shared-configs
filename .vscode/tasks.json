@@ -1,0 +1,49 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "bun",
+			"script": "lint",
+			"label": "Lint Project",
+			"presentation": {
+				"reveal": "always",
+				"revealProblems": "onProblem"
+			},
+			"problemMatcher": [
+				{
+					"owner": "biome",
+					"source": "biome",
+					"pattern": [
+						{
+							"regexp": "^::(?<severity>\\S+)\\s+title=(?<title>.+),file=(?<file>.+),line=(?<line>\\d+),endLine=(?<endLine>\\d+),col=(?<col>\\d+),endColumn=(?<endColumn>\\d+)::(?<message>.+)$",
+							"kind": "location",
+							"severity": 1,
+							"code": 2,
+							"file": 3,
+							"line": 4,
+							"endLine": 5,
+							"column": 6,
+							"endColumn": 7,
+							"message": 8
+						}
+					]
+				},
+				{
+					"owner": "markdown",
+					"source": "markdownlint",
+					"pattern": [
+						{
+							"regexp": "^(.+):(\\d+)(\\s.+)$",
+							"file": 1,
+							"line": 2,
+							"message": 3
+						}
+					]
+				},
+				"$tsc"
+			]
+		}
+	]
+}

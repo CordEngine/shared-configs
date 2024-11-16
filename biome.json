@@ -1,0 +1,78 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"ignoreUnknown": false,
+		"ignore": []
+	},
+	"formatter": {
+		"enabled": true
+	},
+	"organizeImports": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"complexity": {
+				"noExcessiveCognitiveComplexity": "warn",
+				"noUselessStringConcat": "error",
+				"useDateNow": "error"
+			},
+			"correctness": {
+				"noUndeclaredVariables": "error",
+				"noUnusedPrivateClassMembers": "error",
+				"noUnusedVariables": "error",
+				"useArrayLiterals": "error"
+			},
+			"style": {
+				"noNamespace": "error",
+				"noNegationElse": "error",
+				"noYodaExpression": "error",
+				"useBlockStatements": "error",
+				"useCollapsedElseIf": "error",
+				"useConsistentArrayType": "error",
+				"useConsistentBuiltinInstantiation": "error",
+				"useExplicitLengthCheck": "error",
+				"useFilenamingConvention": {
+					"level": "error",
+					"options": { "requireAscii": true, "filenameCases": ["kebab-case"] }
+				},
+				"useForOf": "error",
+				"useNamingConvention": {
+					"level": "error",
+					"options": {
+						"strictCase": false,
+						"requireAscii": true,
+						"conventions": [
+							{
+								"selector": { "kind": "function" },
+								"formats": ["camelCase", "PascalCase"]
+							}
+						]
+					}
+				},
+				"useShorthandAssign": "error",
+				"useThrowNewError": "error",
+				"useThrowOnlyError": "error"
+			},
+			"suspicious": {
+				"noEmptyBlockStatements": "error",
+				"useAwait": "error",
+				"useErrorMessage": "error",
+				"useNumberToFixedDigitsArgument": "error"
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single"
+		},
+		"globals": ["Bun"]
+	}
+}

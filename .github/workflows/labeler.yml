@@ -1,0 +1,71 @@
+name: Labeler
+run-name: Label - ${{ format('PR {0}', github.event.pull_request.number) }}
+
+on:
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  coderabbit:
+    name: "Add CodeRabbit Placeholders"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const pr = context.payload.pull_request;
+
+            let updateData = {};
+            updateData.title = '@coderabbitai';
+            updateData.body = `# ${pr.title}\n\n${pr.body || ''}\n\n@coderabbit summary`;
+
+            try {
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                ...updateData
+              });
+            } catch (error) {
+              core.setFailed(`Failed to update PR #${pr.number}: ${error.message}\nStack: ${error.stack}`);
+              core.debug(`Update payload was: ${JSON.stringify(updateData, null, 2)}`);
+            }
+
+  labeler:
+    name: "Add labels"
+    needs: coderabbit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const LABELS = {
+              TRIAGE: '🚦 status: awaiting triage',
+              RABBIT: '🐰 status: ready for rabbit'
+            };
+
+            const pr = context.payload.pull_request;
+
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: Object.values(LABELS)
+              });
+            } catch (error) {
+              core.setFailed(`Failed to add labels to PR #${pr.number}: ${error.message}\nStack: ${error.stack}`);
+              core.debug(`Labels payload was: ${JSON.stringify(Object.values(LABELS), null, 2)}`);
+            }

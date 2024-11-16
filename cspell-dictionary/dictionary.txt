@@ -1,0 +1,17 @@
+# Project names
+cordengine
+
+# Contributor names
+fabulousgk
+
+# Tooling (package names, etc.)
+bunx
+lockb
+luxon
+ossf
+pino
+sarif
+valibot
+
+# Misc prop names from external sources
+automerge # renovate

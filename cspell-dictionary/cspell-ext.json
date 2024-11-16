@@ -1,0 +1,16 @@
+{
+	"$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/v8.16.0/cspell.schema.json",
+	"version": "0.2",
+	"id": "cord-engine",
+	"name": "Cord Engine",
+	"description": "Cord Engine Project Dictionary",
+	"readonly": true,
+	"dictionaryDefinitions": [
+		{
+			"name": "Cord Engine",
+			"description": "Custom terminology and common words specific to Cord Engine projects",
+			"path": "./dictionary.txt"
+		}
+	],
+	"dictionaries": ["Cord Engine"]
+}

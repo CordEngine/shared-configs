@@ -1,0 +1,8 @@
+{
+	"$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint-cli2/v0.15.0/schema/markdownlint-config-schema.json",
+	"MD010": { "code_blocks": false, "spaces_per_tab": 2 },
+	"MD013": false,
+	"MD033": {
+		"allowed_elements": ["div", "img", "picture", "source", "a"]
+	}
+}

@@ -1,0 +1,37 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": [
+		"config:recommended",
+		":semanticCommits",
+		":maintainLockFilesWeekly",
+		":enableVulnerabilityAlerts",
+		":rebaseStalePrs"
+	],
+	"schedule": ["* 21-23,0-6 * * *"],
+	"timezone": "CST",
+	"packageRules": [
+		{
+			"matchUpdateTypes": ["minor", "patch"],
+			"matchCurrentVersion": "!/^0/",
+			"automerge": true,
+			"stabilityDays": 3,
+			"prCreation": "not-pending",
+			"labels": ["🧽 type: chore", "🤖 status: automated"],
+			"postUpgradeTasks": {
+				"commands": ["bun test"],
+				"executionMode": "branch"
+			}
+		},
+		{
+			"matchUpdateTypes": ["major"],
+			"stabilityDays": 7,
+			"prCreation": "not-pending",
+			"labels": ["🧽 type: chore", "🚦 status: awaiting triage"]
+		},
+		{
+			"matchPackagePatterns": ["^@types/"],
+			"groupName": "type definitions",
+			"labels": ["🧽 type: chore"]
+		}
+	]
+}

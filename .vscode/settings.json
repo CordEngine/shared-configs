@@ -1,0 +1,11 @@
+{
+	"code-runner.executorMap": {
+		"typescript": "bun"
+	},
+	"typeCoverage.strict": true,
+	"editor.defaultFormatter": "biomejs.biome",
+	"sonarlint.connectedMode.project": {
+		"connectionId": "cordengine",
+		"projectKey": "CordEngine_shared-configs"
+	}
+}
