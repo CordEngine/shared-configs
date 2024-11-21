@@ -1,6 +1,6 @@
 {
 	"name": "@cordengine/shared-configs",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Shared configurations for tools used in all Cord Engine projects.",
 	"author": "Brian Lister <brian@sparkforge.dev> (http://sparkforge.dev/)",
 	"contributors": [],
@@ -36,7 +36,6 @@
 		"@types/bun": "^1.1.13",
 		"@types/semver": "^7.5.8",
 		"ajv": "^8.17.1",
-		"json5": "^2.2.3",
 		"semver": "^7.6.3",
 		"typescript": "^5.6.3"
 	},
