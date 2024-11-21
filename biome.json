@@ -34,7 +34,6 @@
 				"noNamespace": "error",
 				"noNegationElse": "error",
 				"noYodaExpression": "error",
-				"useBlockStatements": "error",
 				"useCollapsedElseIf": "error",
 				"useConsistentArrayType": "error",
 				"useConsistentBuiltinInstantiation": "error",
